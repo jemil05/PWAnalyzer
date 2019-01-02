@@ -4,26 +4,39 @@
 		<meta charset="utf-8" />
 	</head>
 	<script>
+		var password = "";
 		function checkInput() {
 			var strength = document.getElementById("pw-strength");
+			password = document.getElementById("password").value;
 			console.log("changes added");
+			console.log(password.match(/\s/g));
+			hasUpperAndLowerCase();
 			strength.innerHTML = currentStrength();
 		}
-
+		
 		function currentStrength() {
 			var counter = 0;
 			var strengthType = ["weak", "not bad", "good", "strong"];
+			if(isLengthEnough()) {
+				counter++;
+			}
+			console.log(counter);
 			return(strengthType[counter]);
-			console.log("Required length: " + isLengthEnough());
+		}
+		
+		function isLengthEnough() {
+			if(password.length > 7) {
+				return true;
+			}
+			return false;
 		}
 
-		function isLengthEnough() {
-			var pwLength = document.getElementById("password").value.length;
-			if(pwLength > 7) {
-				return(true);
+		function hasUpperAndLowerCase() {
+			if (password.match(/[a-z]/) && password.match(/[A-Z]/)) {
+				console.log("has lowercase and uppercase");
 			}
-			return(false);
 		}
+		// function is
 	</script>
 	<body>
 		<h1>Password Strength: </h1>
