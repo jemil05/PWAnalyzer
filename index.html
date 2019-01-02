@@ -5,26 +5,49 @@
 	</head>
 	<script>
 		var password = "";
+		var pwStorage = window.localStorage;
 		function checkInput() {
 			var strength = document.getElementById("pw-strength");
 			password = document.getElementById("password").value;
 			console.log("changes added");
-			console.log(password.match(/\s/g));
-			hasUpperAndLowerCase();
-			strength.innerHTML = currentStrength();
+			if(isLengthMinimum() && !(password.match(/\s/g))) {
+				strength.innerHTML = currentStrength();
+			}
 		}
-		
+
+		function savePassword() {
+			var pwAvailable = true;
+			var pw = { npw : password };
+			for(i = pwStorage.length - 1; i>= 0; i--) {
+				console.log(JSON.parse(pwStorage.getItem(pwStorage.key(i)))["npw"]);
+				if (password == JSON.parse(pwStorage.getItem(pwStorage.key(i)))["npw"]) {
+					pwAvailable = false;
+					alert("already taken");
+				}
+			}
+			if(pwAvailable) {
+				var pws = JSON.stringify(pw);
+				pwStorage.setItem(password, pws);
+			}
+			console.log(pwStorage);
+		}
+
 		function currentStrength() {
 			var counter = 0;
 			var strengthType = ["weak", "not bad", "good", "strong"];
-			if(isLengthEnough()) {
+			if(isLengthMinimum()) {
 				counter++;
 			}
-			console.log(counter);
+			if(hasUpperAndLowerCase()) {
+				counter++;
+			}
+			if(hasMinRequiredCharacters()) {
+				counter++;
+			}
 			return(strengthType[counter]);
 		}
-		
-		function isLengthEnough() {
+
+		function isLengthMinimum() {
 			if(password.length > 7) {
 				return true;
 			}
@@ -33,15 +56,23 @@
 
 		function hasUpperAndLowerCase() {
 			if (password.match(/[a-z]/) && password.match(/[A-Z]/)) {
-				console.log("has lowercase and uppercase");
+				return true;
 			}
+			return false;
 		}
-		// function is
+
+		function hasMinRequiredCharacters() {
+			if((password.match(/[^\w\s]/g) || password.match(/[0-9]/g)) && (password.match(/[a-zA-Z]/g).length > 1 )) {
+				return true;
+			}
+			return false;
+		}
 	</script>
 	<body>
-		<h1>Password Strength: </h1>
-		<h1 id="pw-strength">weak</h1>
+		<h5>Password Strength: </h5>
+		<h5 id="pw-strength"></h5>
+		<h5 id="warning"></h5>
 		<input id="password" onchange="checkInput();" onkeypress="this.onchange();" onpaste="this.onchange();" oninput="this.onchange();" minlength="8" maxlength="30" /><br/>
-		<input id="pw-submit" type="submit" value="Submit"/>
+		<input id="pw-submit" type="submit" value="Submit" onclick="savePassword()" />
 	</body>
 </html>
